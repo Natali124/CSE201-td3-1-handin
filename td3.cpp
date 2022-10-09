@@ -41,7 +41,6 @@ double* append_to_array(double element,
   }
   array[current_size] = element;
   current_size++;
-  std::cout<< max_size <<endl;
   return array;
 }
 
@@ -78,6 +77,13 @@ bool simulate_projectile(const double magnitude, const double angle,
   t = 0;
   x = 0;
   y = 0;
+  std::cout<<telemetry[telemetry_current_size - 1] << "   " << telemetry_current_size << "   " << telemetry_max_size << endl;
+  telemetry = append_to_array(t, telemetry, telemetry_current_size, telemetry_max_size);
+  std::cout<<telemetry[telemetry_current_size - 1] << "   " << telemetry_current_size << "   " << telemetry_max_size << endl;
+  telemetry = append_to_array(x, telemetry, telemetry_current_size, telemetry_max_size);
+  std::cout<<telemetry[telemetry_current_size - 1] << "   " << telemetry_current_size << "   " << telemetry_max_size << endl;
+  telemetry = append_to_array(y, telemetry, telemetry_current_size, telemetry_max_size);
+  std::cout<<telemetry[telemetry_current_size - 1] << "   " << telemetry_current_size << "   " << telemetry_max_size << endl;
 
   hit_target = false;
   hit_obstacle = false;
@@ -92,10 +98,46 @@ bool simulate_projectile(const double magnitude, const double angle,
       t = t + simulation_interval;
       y = v0_y * t  - 0.5 * g * t * t;
       x = v0_x * t;
+      if (y >= 0) {
+          telemetry = append_to_array(t, telemetry, telemetry_current_size, telemetry_max_size);
+          telemetry = append_to_array(x, telemetry, telemetry_current_size, telemetry_max_size);
+          telemetry = append_to_array(y, telemetry, telemetry_current_size, telemetry_max_size);
+      }
     }
   }
 
   return hit_target;
+}
+
+
+void sort(double *array, const int num) {
+   for (int i = 0; i < num; i ++){
+       std::cout << array[i] << "  ";
+   }
+   std::cout << endl;
+   bool b = 0;
+   while (b == 0){
+       b = 1;
+       for (int i = 0; i < num - 4; i += 3){
+           if (array[i + 3] < array[i]){
+               b = 0;
+               double temp = array[i];
+               array[i] = array[i + 3];
+               array[i + 3] = temp;
+               temp = array[i + 1];
+               array[i + 1] = array[i + 4];
+               array[i + 4] = temp;
+               temp = array[i + 2];
+               array[i + 2] = array[i + 5];
+               array[i + 5] = temp;
+
+           }
+       }
+   }
+   for (int i = 0; i < num; i++){
+       std::cout << array[i] << "  ";
+   }
+   std::cout << endl;
 }
 
 void merge_telemetry(double **telemetries,
@@ -104,5 +146,15 @@ void merge_telemetry(double **telemetries,
                      double* &global_telemetry,
                      int &global_telemetry_current_size,
                      int &global_telemetry_max_size) {
-  // IMPLEMENT YOUR FUNCTION HERE
+  for (int i = 0; i < tot_telemetries; i++){
+      for (int j = 0; j < telemetries_sizes[i]; j++){
+          global_telemetry = append_to_array(telemetries[i][j], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+          //std::cout << "  " << telemetries[i][j] << endl;
+      }
+  }
+  sort(global_telemetry, global_telemetry_current_size);
+
+  for (int i = 0; i < global_telemetry_current_size;i++){
+      //std::cout << global_telemetry[i];
+  }
 }
